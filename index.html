@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CGPC Aptitude Test - TISS Tuljapur</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #1e40af 0%, #7c3aed 100%); }
+        .timer-warning { animation: pulse 1s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .question-card { transition: all 0.3s ease; }
+        .option-btn { transition: all 0.2s ease; }
+        .option-btn:hover { transform: translateY(-1px); }
+        .selected { background: #3b82f6; color: white; }
+        .correct { background: #10b981; color: white; }
+        .incorrect { background: #ef4444; color: white; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="gradient-bg text-white py-6 shadow-lg">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="text-center">
+                <h1 class="text-3xl font-bold mb-2">Career Guidance and Placement Cell</h1>
+                <h2 class="text-xl font-medium mb-1">TISS Tuljapur (2024-2026 Batch)</h2>
+                <h3 class="text-lg">CGPC Aptitude Test – Saturday, 2nd August, 2025</h3>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="max-w-4xl mx-auto px-4 py-8">
+        <!-- Student Registration Form -->
+        <div id="registrationForm" class="bg-white rounded-xl shadow-lg p-8 mb-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Student Registration</h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
+                    <input type="text" id="fullName" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter your full name">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Email ID *</label>
+                    <input type="email" id="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="your.email@tiss.edu">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Roll Number *</label>
+                    <input type="text" id="rollNumber" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter roll number">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Programme *</label>
+                    <select id="programme" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="">Select Programme</option>
+                        <option value="MSW-RD">M.A. Social Work (Rural Development)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Year *</label>
+                    <select id="year" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="">Select Year</option>
+                        <option value="1st Year">1st Year</option>
+                        <option value="2nd Year">2nd Year</option>
+                    </select>
+                </div>
+            </div>
+            <div class="mt-8 text-center">
+                <button id="startTestBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors">
+                    Start Aptitude Test
+                </button>
+            </div>
+        </div>
+
+        <!-- Test Interface (Hidden Initially) -->
+        <div id="testInterface" class="hidden">
+            <!-- Test Header -->
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800">CGPC Aptitude Test</h3>
+                        <p class="text-gray-600" id="studentInfo"></p>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-2xl font-bold text-blue-600" id="timer">30:00</div>
+                        <p class="text-sm text-gray-600">Time Remaining</p>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <div class="flex justify-between text-sm text-gray-600 mb-2">
+                        <span>Progress</span>
+                        <span id="progressText">1 of 20</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div id="progressBar" class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: 5%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question Card -->
+            <div class="bg-white rounded-xl shadow-lg p-8 mb-6 question-card fade-in">
+                <div class="mb-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium" id="questionType">Logical Reasoning</span>
+                        <span class="text-gray-500 text-sm" id="questionNumber">Question 1 of 20</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4" id="questionText">Loading question...</h3>
+                </div>
+                
+                <div class="space-y-3" id="optionsContainer">
+                    <!-- Options will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="flex justify-between items-center">
+                <button id="prevBtn" class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-6 py-2 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                    Previous
+                </button>
+                <div class="flex space-x-2">
+                    <button id="nextBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors">
+                        Next
+                    </button>
+                    <button id="submitBtn" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-medium transition-colors hidden">
+                        Submit Test
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Screen (Hidden Initially) -->
+        <div id="resultsScreen" class="hidden">
+            <div class="bg-white rounded-xl shadow-lg p-8 text-center">
+                <div class="mb-6">
+                    <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-3xl font-bold text-gray-800 mb-2">Test Completed!</h2>
+                    <p class="text-gray-600">Thank you for taking the CGPC Aptitude Test</p>
+                </div>
+                
+                <div class="grid md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-blue-50 p-6 rounded-lg">
+                        <div class="text-3xl font-bold text-blue-600" id="finalScore">0</div>
+                        <div class="text-sm text-gray-600">Total Score</div>
+                    </div>
+                    <div class="bg-green-50 p-6 rounded-lg">
+                        <div class="text-3xl font-bold text-green-600" id="correctAnswers">0</div>
+                        <div class="text-sm text-gray-600">Correct Answers</div>
+                    </div>
+                    <div class="bg-purple-50 p-6 rounded-lg">
+                        <div class="text-3xl font-bold text-purple-600" id="accuracy">0%</div>
+                        <div class="text-sm text-gray-600">Accuracy</div>
+                    </div>
+                </div>
+                
+                <div class="text-gray-600 mb-6">
+                    <p>Your results have been recorded. You will receive detailed feedback via email within 24 hours.</p>
+                </div>
+                
+                <button onclick="location.reload()" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors">
+                    Take Test Again
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Test data
+        const questions = [
+            {
+                type: "Logical Reasoning",
+                question: "If all roses are flowers and some flowers are red, which of the following must be true?",
+                options: ["All roses are red", "Some roses are red", "No roses are red", "Some roses may be red"],
+                correct: 3
+            },
+            {
+                type: "Quantitative Aptitude",
+                question: "What is 15% of 240?",
+                options: ["36", "35", "38", "40"],
+                correct: 0
+            },
+            {
+                type: "Verbal Ability",
+                question: "Choose the word that is most similar in meaning to 'ABUNDANT':",
+                options: ["Scarce", "Plentiful", "Limited", "Rare"],
+                correct: 1
+            },
+            {
+                type: "General Knowledge",
+                question: "Who is known as the 'Father of Social Work' in India?",
+                options: ["Dr. A.P.J. Abdul Kalam", "Mahatma Gandhi", "Dr. B.R. Ambedkar", "Armaity Desai"],
+                correct: 3
+            },
+            {
+                type: "Logical Reasoning",
+                question: "In a certain code, COMPUTER is written as RFUVQNPC. How is MEDICINE written in that code?",
+                options: ["EOJDEJFM", "EOJDJEFM", "NFEJDJOF", "NFEJDEJF"],
+                correct: 2
+            },
+            {
+                type: "Quantitative Aptitude",
+                question: "A train travels 60 km in 45 minutes. What is its speed in km/hr?",
+                options: ["75", "80", "85", "90"],
+                correct: 1
+            },
+            {
+                type: "Verbal Ability",
+                question: "Choose the correctly spelled word:",
+                options: ["Accomodate", "Accommodate", "Acommodate", "Acomodate"],
+                correct: 1
+            },
+            {
+                type: "General Knowledge",
+                question: "Which of the following is a Sustainable Development Goal (SDG)?",
+                options: ["Quality Education", "Economic Growth", "Climate Action", "All of the above"],
+                correct: 3
+            },
+            {
+                type: "Logical Reasoning",
+                question: "If P + Q means P is the brother of Q; P - Q means P is the sister of Q; P × Q means P is the father of Q. Which of the following means that C is the son of M?",
+                options: ["M × C", "C + M", "M + C", "C × M"],
+                correct: 0
+            },
+            {
+                type: "Quantitative Aptitude",
+                question: "The average of 5 numbers is 27. If one number is excluded, the average becomes 25. What is the excluded number?",
+                options: ["35", "37", "33", "39"],
+                correct: 0
+            },
+            {
+                type: "Verbal Ability",
+                question: "Choose the word that best completes the sentence: 'The new policy will _____ significant changes in the organization.'",
+                options: ["bring about", "bring up", "bring in", "bring down"],
+                correct: 0
+            },
+            {
+                type: "General Knowledge",
+                question: "TISS was established in which year?",
+                options: ["1936", "1944", "1950", "1952"],
+                correct: 1
+            },
+            {
+                type: "Logical Reasoning",
+                question: "Find the missing number in the series: 2, 6, 12, 20, 30, ?",
+                options: ["40", "42", "44", "46"],
+                correct: 1
+            },
+            {
+                type: "Quantitative Aptitude",
+                question: "If the cost price of 12 pens is equal to the selling price of 10 pens, what is the profit percentage?",
+                options: ["20%", "25%", "16.67%", "22%"],
+                correct: 0
+            },
+            {
+                type: "Verbal Ability",
+                question: "Identify the error in the sentence: 'Each of the students have submitted their assignments.'",
+                options: ["Each of", "students have", "submitted their", "No error"],
+                correct: 1
+            },
+            {
+                type: "General Knowledge",
+                question: "Which article of the Indian Constitution deals with the Right to Education?",
+                options: ["Article 19", "Article 21A", "Article 25", "Article 32"],
+                correct: 1
+            },
+            {
+                type: "Logical Reasoning",
+                question: "If FRIEND is coded as HUMJTK, how is CANDLE coded?",
+                options: ["EDRIRL", "ECQFNG", "DCPMFG", "ECPMFH"],
+                correct: 1
+            },
+            {
+                type: "Quantitative Aptitude",
+                question: "A sum of money doubles itself in 8 years at simple interest. What is the rate of interest per annum?",
+                options: ["12.5%", "10%", "15%", "8%"],
+                correct: 0
+            },
+            {
+                type: "Verbal Ability",
+                question: "Choose the antonym of 'OPTIMISTIC':",
+                options: ["Hopeful", "Positive", "Pessimistic", "Confident"],
+                correct: 2
+            },
+            {
+                type: "General Knowledge",
+                question: "The concept of 'Social Work' as a profession was first developed in which country?",
+                options: ["India", "United Kingdom", "United States", "Germany"],
+                correct: 2
+            }
+        ];
+
+        // Test state
+        let currentQuestion = 0;
+        let answers = [];
+        let timeLeft = 1800; // 30 minutes in seconds
+        let timerInterval;
+        let studentData = {};
+
+        // DOM elements
+        const registrationForm = document.getElementById('registrationForm');
+        const testInterface = document.getElementById('testInterface');
+        const resultsScreen = document.getElementById('resultsScreen');
+        const startTestBtn = document.getElementById('startTestBtn');
+        const timer = document.getElementById('timer');
+        const questionText = document.getElementById('questionText');
+        const questionType = document.getElementById('questionType');
+        const questionNumber = document.getElementById('questionNumber');
+        const optionsContainer = document.getElementById('optionsContainer');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const submitBtn = document.getElementById('submitBtn');
+        const progressBar = document.getElementById('progressBar');
+        const progressText = document.getElementById('progressText');
+
+        // Start test
+        startTestBtn.addEventListener('click', function() {
+            // Validate form
+            const fullName = document.getElementById('fullName').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const rollNumber = document.getElementById('rollNumber').value.trim();
+            const programme = document.getElementById('programme').value;
+            const year = document.getElementById('year').value;
+
+            if (!fullName || !email || !rollNumber || !programme || !year) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+
+            // Store student data
+            studentData = { fullName, email, rollNumber, programme, year };
+            
+            // Show student info
+            document.getElementById('studentInfo').textContent = `${fullName} - ${rollNumber}`;
+            
+            // Hide registration form and show test
+            registrationForm.classList.add('hidden');
+            testInterface.classList.remove('hidden');
+            
+            // Start timer
+            startTimer();
+            
+            // Load first question
+            loadQuestion();
+        });
+
+        // Timer function
+        function startTimer() {
+            timerInterval = setInterval(function() {
+                timeLeft--;
+                
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timer.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                // Warning when 5 minutes left
+                if (timeLeft <= 300) {
+                    timer.classList.add('timer-warning', 'text-red-600');
+                }
+                
+                // Auto submit when time is up
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    submitTest();
+                }
+            }, 1000);
+        }
+
+        // Load question
+        function loadQuestion() {
+            const question = questions[currentQuestion];
+            
+            questionText.textContent = question.question;
+            questionType.textContent = question.type;
+            questionNumber.textContent = `Question ${currentQuestion + 1} of ${questions.length}`;
+            
+            // Update progress
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            progressBar.style.width = `${progress}%`;
+            progressText.textContent = `${currentQuestion + 1} of ${questions.length}`;
+            
+            // Load options
+            optionsContainer.innerHTML = '';
+            question.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.className = 'option-btn w-full text-left p-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors';
+                button.innerHTML = `<span class="font-medium">${String.fromCharCode(65 + index)}.</span> ${option}`;
+                button.onclick = () => selectOption(index, button);
+                
+                // Highlight if previously selected
+                if (answers[currentQuestion] === index) {
+                    button.classList.add('selected');
+                }
+                
+                optionsContainer.appendChild(button);
+            });
+            
+            // Update navigation buttons
+            prevBtn.disabled = currentQuestion === 0;
+            
+            if (currentQuestion === questions.length - 1) {
+                nextBtn.classList.add('hidden');
+                submitBtn.classList.remove('hidden');
+            } else {
+                nextBtn.classList.remove('hidden');
+                submitBtn.classList.add('hidden');
+            }
+        }
+
+        // Select option
+        function selectOption(index, button) {
+            // Remove previous selection
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            // Add selection to clicked button
+            button.classList.add('selected');
+            
+            // Store answer
+            answers[currentQuestion] = index;
+        }
+
+        // Navigation
+        prevBtn.addEventListener('click', function() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                loadQuestion();
+            }
+        });
+
+        nextBtn.addEventListener('click', function() {
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                loadQuestion();
+            }
+        });
+
+        submitBtn.addEventListener('click', function() {
+            if (confirm('Are you sure you want to submit the test? You cannot change your answers after submission.')) {
+                submitTest();
+            }
+        });
+
+        // Submit test
+        function submitTest() {
+            clearInterval(timerInterval);
+            
+            // Calculate results
+            let correctCount = 0;
+            answers.forEach((answer, index) => {
+                if (answer === questions[index].correct) {
+                    correctCount++;
+                }
+            });
+            
+            const totalQuestions = questions.length;
+            const accuracy = Math.round((correctCount / totalQuestions) * 100);
+            const score = correctCount * 5; // 5 points per correct answer
+            
+            // Show results
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('correctAnswers').textContent = `${correctCount}/${totalQuestions}`;
+            document.getElementById('accuracy').textContent = `${accuracy}%`;
+            
+            // Hide test interface and show results
+            testInterface.classList.add('hidden');
+            resultsScreen.classList.remove('hidden');
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9697c71e706441b6',t:'MTc1NDI0NDY5MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
